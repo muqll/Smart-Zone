@@ -1,0 +1,685 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SmartMafia VIP | لعبة المافيا والتحقيق لايف</title>
+    
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
+
+    <style>
+        :root {
+            --bg-dark: #09090b;
+            --panel-bg: rgba(18, 18, 22, 0.88);
+            --text-light: #ffffff;
+            --text-muted: #a1a1aa;
+            --border-color: rgba(255, 255, 255, 0.08);
+            --accent-red: #ef4444;
+            --success-green: #10b981;
+            --warning-gold: #f59e0b;
+            --detective-blue: #3b82f6;
+            --vip-gold: #f59e0b;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-dark);
+            background-image: url('mafia_bg.jpg'); 
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            color: var(--text-light);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px 15px;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* زخرفة متحركة غامضة (شبكة النيون الحمراء) */
+        .bg-grid-mafia {
+            content: ""; position: fixed; top: -50%; left: -50%; width: 200%; height: 200%;
+            background-image: 
+                linear-gradient(rgba(239, 68, 68, 0.02) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(239, 68, 68, 0.02) 1px, transparent 1px);
+            background-size: 35px 35px; z-index: 1; pointer-events: none;
+            transform: perspective(600px) rotateX(55deg);
+            animation: moveGrid 25s linear infinite;
+        }
+        @keyframes moveGrid {
+            0% { transform: perspective(600px) rotateX(55deg) translateY(0); }
+            100% { transform: perspective(600px) rotateX(55deg) translateY(35px); }
+        }
+
+        .main-platform { width: 100%; max-width: 750px; z-index: 2; text-align: center; margin-bottom: 30px; }
+
+        .platform-header {
+            margin-bottom: 25px; background: rgba(0, 0, 0, 0.7); padding: 20px; border-radius: 18px; border: 1px solid var(--border-color);
+        }
+        .platform-header h1 { font-size: 32px; font-weight: 900; color: var(--accent-red); letter-spacing: 1px; }
+        .platform-header p { color: var(--text-muted); font-size: 14px; margin-top: 5px; }
+
+        .game-zone {
+            width: 100%; background: var(--panel-bg); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); padding: 30px 20px; border-radius: 24px; border: 1px solid var(--border-color); box-shadow: 0 25px 60px rgba(0, 0, 0, 0.9);
+        }
+
+        input { width: 100%; padding: 14px; margin-bottom: 15px; border: 1px solid var(--border-color); border-radius: 10px; background: rgba(0, 0, 0, 0.7); color: var(--text-light); font-size: 16px; text-align: center; outline: none; }
+        input:focus { border-color: var(--accent-red); }
+        
+        button { width: 100%; background-color: var(--text-light); color: #000000; border: none; padding: 14px; font-size: 16px; font-weight: 700; border-radius: 10px; cursor: pointer; transition: all 0.3s ease; margin-bottom: 12px; }
+        button:hover { background-color: #dddddd; transform: translateY(-2px); }
+        button.secondary-btn { background-color: transparent; color: var(--text-light); border: 1px solid var(--border-color); }
+        button.secondary-btn:hover { background-color: rgba(255, 255, 255, 0.05); border-color: var(--text-light); }
+        button.danger-btn { background-color: var(--accent-red); color: white; }
+        button.danger-btn:hover { background-color: #dc2626; }
+
+        /* ستايل كارت الـ VIP وبوابة العبور */
+        .vip-card {
+            background: linear-gradient(135deg, rgba(245, 158, 11, 0.15) 0%, rgba(180, 83, 9, 0.05) 100%);
+            border: 2px solid var(--vip-gold); padding: 25px 20px; border-radius: 15px; margin-bottom: 20px;
+        }
+        .vip-title {
+            font-size: 24px; font-weight: 900; background: linear-gradient(90deg, #ffe066, #f59e0b); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 10px;
+        }
+        button.vip-btn { background: linear-gradient(90deg, #f59e0b, #d97706); color: #000; font-weight: 800; border: 1px solid #fef08a; box-shadow: 0 4px 15px rgba(217, 119, 6, 0.4); }
+        button.vip-btn:hover { background: linear-gradient(90deg, #fbbf24, #f59e0b); }
+        button.telegram-pay-btn { background: #229ED9; color: #fff; font-weight: 700; border: none; }
+        .vip-badge-inline { background: linear-gradient(90deg, #f59e0b, #fbbf24); color: #000; font-size: 11px; font-weight: 900; padding: 2px 6px; border-radius: 5px; margin-right: 5px; display: inline-block; }
+
+        .screen { display: none; }
+        .screen.active { display: block; }
+
+        .code-display { font-size: 34px; font-weight: 900; background: rgba(255, 255, 255, 0.03); padding: 10px 20px; border-radius: 12px; border: 1px dashed var(--border-color); display: inline-block; margin: 15px 0; letter-spacing: 4px; color: var(--warning-gold); }
+        .player-list { list-style: none; margin: 20px 0; text-align: right; max-height: 200px; overflow-y: auto; }
+        .player-list li { background: rgba(0, 0, 0, 0.5); padding: 12px 15px; margin-bottom: 8px; border-radius: 8px; border-right: 4px solid var(--accent-red); font-size: 15px; display: flex; justify-content: space-between; align-items: center; }
+        .kick-btn { background: var(--accent-red); color: white; border: none; padding: 4px 10px; font-size: 12px; border-radius: 5px; cursor: pointer; width: auto; margin: 0; }
+
+        .phase-badge { background: var(--accent-red); color: #fff; padding: 6px 18px; border-radius: 20px; font-weight: 700; font-size: 14px; display: inline-block; margin-bottom: 20px; }
+        .info-card { background: rgba(255,255,255,0.04); padding: 15px; border-radius: 12px; border: 1px solid var(--border-color); margin: 15px 0; font-size: 15px; line-height: 1.6; }
+        .secret-box { font-size: 20px; font-weight: 800; padding: 20px; border-radius: 12px; margin: 20px 0; color: #fff; }
+
+        .role-card { background: rgba(0,0,0,0.6); padding: 25px 20px; border-radius: 16px; border: 2px solid var(--border-color); margin: 20px 0; }
+        .role-img { width: 140px; height: 140px; border-radius: 50%; object-fit: cover; margin-bottom: 15px; border: 3px solid var(--border-color); }
+        .role-title { font-size: 24px; font-weight: 900; margin-bottom: 10px; }
+        .role-desc { font-size: 14px; color: var(--text-muted); max-width: 90%; margin: 0 auto; }
+
+        .action-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 20px 0; }
+        .action-btn { background: rgba(0,0,0,0.6); color: white; border: 1px solid var(--border-color); padding: 14px; font-size: 14px; border-radius: 8px; }
+        .action-btn:hover:not(:disabled) { border-color: var(--text-light); }
+        .action-btn.selected { background: var(--warning-gold); color: black; border-color: var(--warning-gold); font-weight: bold; }
+        .action-btn.skip-style { grid-column: span 2; background: rgba(255,255,255,0.08); font-weight: bold; }
+        .action-btn.skip-style.selected { background: var(--success-green); color: black; }
+
+        /* شات الغرفة المباشر */
+        .chat-container {
+            margin-top: 25px; border: 1px solid var(--border-color); border-radius: 16px;
+            background: rgba(10, 10, 12, 0.95); text-align: right; display: flex; flex-direction: column; overflow: hidden;
+        }
+        .chat-header { background: rgba(255,255,255,0.03); padding: 14px 18px; font-size: 15px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; }
+        .chat-messages { padding: 15px; max-height: 280px; min-height: 200px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
+        .msg { padding: 10px 14px; border-radius: 10px; max-width: 85%; font-size: 14px; word-wrap: break-word; }
+        .msg.my { background: #27272a; align-self: flex-start; border-left: 3px solid var(--accent-red); }
+        .msg.other { background: #18181b; align-self: flex-end; border-right: 3px solid var(--warning-gold); }
+        .msg.system { background: rgba(239, 68, 68, 0.1); color: #f87171; align-self: center; text-align: center; width: 100%; border: 1px dashed rgba(239, 68, 68, 0.3); font-weight: 600; }
+        .msg-sender { font-weight: 800; font-size: 12px; color: var(--warning-gold); margin-bottom: 3px; display: block; }
+        .dead-badge { background: var(--accent-red); color: white; font-size: 9px; padding: 1px 4px; border-radius: 3px; margin-left: 5px; }
+
+        .chat-input-area { display: flex; border-top: 1px solid var(--border-color); background: #000; }
+        .chat-input-area input { flex: 1; margin: 0; padding: 16px; background: transparent; border: none; text-align: right; }
+        .chat-input-area button { width: auto; margin: 0; padding: 0 25px; border-radius: 0; }
+
+        .footer { margin-top: 25px; font-size: 13px; color: var(--text-muted); z-index: 2; text-align: center; }
+        .footer strong { color: var(--text-light); }
+        ::-webkit-scrollbar { width: 5px; }
+        ::-webkit-scrollbar-thumb { background: #27272a; border-radius: 10px; }
+    </style>
+</head>
+<body>
+
+    <div class="bg-grid-mafia"></div>
+
+    <div class="main-platform">
+        <div class="platform-header">
+            <h1>SMARTMAFIA</h1>
+            <p>التحقيق والغموض والمكائد في بث حي مباشر</p>
+        </div>
+
+        <div class="game-zone">
+            <div id="vipGateScreen" class="screen active">
+                <div class="vip-card">
+                    <div class="vip-title">👑 بوابة الـ VIP للعبة المافيا والتحقيق</div>
+                    <p style="color: var(--text-muted); font-size: 14px; margin-bottom: 20px; line-height: 1.6;">
+                        يتطلب هذا القسم رمز تفعيل الـ VIP الخاص بالمنصة. يرجى إدخاله أدناه لفتح كامل اللوحة والخصائص الآن.
+                    </p>
+                    <input type="text" id="vipCodeInput" placeholder="أدخل رمز الـ VIP السري هنا">
+                    <button id="btnVerifyVip" class="vip-btn">تفعيل وولوج اللعبة الآن ✨</button>
+                </div>
+                <h3 style="margin: 20px 0 10px 0; font-size: 15px; color: var(--text-muted);">ليس لديكم رمز تفعيل؟</h3>
+                <button class="telegram-pay-btn" onclick="openTelegramPay()">💬 يمكنكم التواصل معنا لتفعيل حسابكم فوراً</button>
+                <button onclick="location.href='index.html'" class="secondary-btn" style="margin-top: 10px;">العودة للمنصة الرئيسية</button>
+            </div>
+
+            <div id="homeScreen" class="screen">
+                <div style="margin-bottom: 20px; color: var(--vip-gold); font-weight: bold; font-size: 14px;">✨ تم التحقق بنجاح من حساب الـ VIP الملكي</div>
+                <button onclick="showScreen('createScreen')">إنشاء غرفة جديدة</button>
+                <button onclick="showScreen('joinScreen')" class="secondary-btn">الانضمام إلى غرفة قائمة</button>
+                <button onclick="location.href='index.html'" class="secondary-btn" style="color: var(--accent-red); margin-top: 10px;"> العودة للمنصة الرئيسية</button>
+            </div>
+
+            <div id="createScreen" class="screen">
+                <h3>أدخل اسمك يا مؤسس المدينة</h3>
+                <input type="text" id="adminName" placeholder="اكتب اسمك هنا...">
+                <button id="btnCreate">توليد كود الغرفة والانتظار</button>
+                <button onclick="showScreen('homeScreen')" class="secondary-btn">رجوع</button>
+            </div>
+
+            <div id="joinScreen" class="screen">
+                <h3>ادخل كود الغرفة واسمك المستعار</h3>
+                <input type="text" id="joinCode" placeholder="كود الغرفة المتكون من 4 أرقام">
+                <input type="text" id="playerName" placeholder="اكتب اسمك هنا...">
+                <button id="btnJoin">دخول الغرفة والتحالف</button>
+                <button onclick="showScreen('homeScreen')" class="secondary-btn">رجوع</button>
+            </div>
+
+            <div id="lobbyScreen" class="screen">
+                <h3>معرّف الغرفة الرقمي</h3>
+                <div id="roomCodeDisplay" class="code-display"></div>
+                <h3>قائمة المواطنين المتواجدين (<span id="playerCount">0</span>)</h3>
+                <ul id="playerList" class="player-list"></ul>
+                <button id="startGameBtn" class="danger-btn" style="display:none;">توزيع الأدوار وبدء جولة الليل 🚀</button>
+                <p id="waitingMessage" style="color: var(--text-muted);">بإنتظار مؤسس الغرفة ليعلن بداية الليل...</p>
+            </div>
+
+            <div id="roleScreen" class="screen">
+                <div class="phase-badge">المرحلة الأولى: استلاف الهوية السرية</div>
+                <div class="role-card" id="roleCardBox">
+                    <img id="roleImage" src="" alt="دورك" class="role-img">
+                    <div id="roleTitle" class="role-title"></div>
+                    <div id="roleDesc" class="role-desc"></div>
+                </div>
+                <button id="confirmRoleBtn">لقد فهمت دوري السري وأستعد لليل 👁️</button>
+            </div>
+
+            <div id="nightScreen" class="screen">
+                <div class="phase-badge" style="background: #1e1b4b; border: 1px solid var(--accent-red);">جولة الليل: المدينة تنام والشر يقترب 🌙</div>
+                <div class="info-card" id="nightInstructions">جاري تحميل تعليمات دورك السري...</div>
+                <div id="nightActionGrid" class="action-grid"></div>
+                <div id="nightStatusBox" class="info-card" style="color: var(--warning-gold);">في انتظار تنفيذ جميع أصحاب القدرات لمهامهم...</div>
+                <button id="adminEndNightBtn" class="danger-btn" style="display:none;">إنهاء الليل وإعلان الصباح ☀️</button>
+            </div>
+
+            <div id="dayScreen" class="screen">
+                <div class="phase-badge" style="background: var(--warning-gold); color: #000;">جولة النهار: النقاش والتصويت العلني ☀️</div>
+                <div class="info-card" id="dayReportBox" style="border: 2px solid var(--accent-red); font-weight: bold;"></div>
+                <h3>من تشتبهون به ليكون من المافيا؟ صوتوا الآن!</h3>
+                <div id="dayVoteGrid" class="action-grid"></div>
+                <div id="dayVotingStatus" class="info-card">في انتظار جمع أصوات الأحياء...</div>
+                <button id="adminRevealDayBtn" style="display:none;" class="danger-btn">إنهاء جولة التصويت وإعلان النتيجة 👁️</button>
+                <div id="dayResultBox" class="secret-box" style="display:none; background: rgba(0,0,0,0.5); padding: 15px; border-radius: 10px; margin-top: 15px;"></div>
+                <button id="adminNextNightBtn" style="display:none;" class="secondary-btn">الانتقال إلى الليل التالي 🌙</button>
+            </div>
+
+            <div id="gameOverScreen" class="screen">
+                <div class="phase-badge" style="background: var(--success-green); color: #000;">انتهت المعركة الحية 🏁</div>
+                <h2 id="winnerTitle" style="font-size: 28px; margin: 20px 0;"></h2>
+                <div class="info-card" id="gameOverDetails"></div>
+                <button id="btnResetGame" class="danger-btn" style="display:none;">إعادة اللعبة إلى اللوبي</button>
+            </div>
+
+            <div id="globalChat" class="chat-container" style="display:none;">
+                <div class="chat-header">
+                    <span>💬 شات المدينة الحي - نقاشات واتهامات</span>
+                    <span id="chatStatusBadge" style="font-size: 12px; color: var(--success-green);">● حي</span>
+                </div>
+                <div id="chatMessages" class="chat-messages"></div>
+                <div class="chat-input-area" id="chatInputArea">
+                    <input type="text" id="chatInput" placeholder="اكتب رسالتك واتهامك هنا..." autocomplete="off">
+                    <button id="sendMsgBtn">إرسال</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer">منصة SmartZone | تم التطوير بواسطة المطور <strong>مؤمن يوسف</strong></div>
+
+    <script>
+        // إعدادات فايربيس الخاصة بك
+        const firebaseConfig = {
+            apiKey: "AIzaSyAdEzHyipaklEkr7QnV1jKu_GdrpwBZInk",
+            authDomain: "barra-alsalfa.firebaseapp.com",
+            databaseURL: "https://barra-alsalfa-default-rtdb.firebaseio.com",
+            projectId: "barra-alsalfa",
+            storageBucket: "barra-alsalfa.firebasestorage.app",
+            messagingSenderId: "997462084225",
+            appId: "1:997462084225:web:703364aee68e72216d1b80",
+            measurementId: "G-1H41EGBG93"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+
+        let myName = ""; let roomCode = ""; let isAdmin = false;
+        let myRole = ""; let isAlive = true; let lastSavedTarget = "";
+        const SECRET_VIP_CODE = "mumin06";
+
+        const roleDetails = {
+            "mafia": { title: "أنت: المافيا الخفية 🩸", desc: "هدفك هو القضاء على جميع الأبرياء في المدينة. تنسق مع زملائك في الليل لاختيار ضحية واحدة وتصفيتها دون لفت الأنظار.", img: "mafia.jpg" },
+            "doctor": { title: "أنت: طبيب المدينة 🩺", desc: "أنت خط الدفاع الأول عن الأبرياء. اختر كل ليلة شخصاً واحداً لتحميه من هجوم المافيا. تذكر: لا يمكنك حماية نفس الشخص مرتين متتاليتين!", img: "doctor.jpg" },
+            "detective": { title: "أنت: المحقق الذكي 🔍", desc: "أنت عين العدالة الباحثة عن الحقائق. يحق لك كل ليلة استجواب لاعب واحد لتعرف هويته وإن كان ينتمي للمافيا أم مواطن صالح.", img: "detective.jpg" },
+            "citizen": { title: "أنت: مواطن صالح 🛡️", desc: "لا تملك قدرات ليلية خاصة، ولكن قوتك تكمن في نقاشات النهار والتصويت العلني لقذف المافيا خارج المدينة. راقب جيداً وصوت بحكمة!", img: "citizen.jpg" }
+        };
+
+        // ربط الأحداث
+        document.getElementById('btnVerifyVip').onclick = verifyVipCode;
+        document.getElementById('btnCreate').onclick = createRoom;
+        document.getElementById('btnJoin').onclick = joinRoom;
+        document.getElementById('startGameBtn').onclick = distributeRolesAndStart;
+        document.getElementById('confirmRoleBtn').onclick = () => { enterNightPhase(); };
+        document.getElementById('adminEndNightBtn').onclick = endNightAndProcessActions;
+        document.getElementById('adminRevealDayBtn').onclick = processDayVotes;
+        document.getElementById('adminNextNightBtn').onclick = startNextNight;
+        document.getElementById('btnResetGame').onclick = resetGameToLobby;
+        document.getElementById('sendMsgBtn').onclick = sendChatMessage;
+        document.getElementById('chatInput').addEventListener('keypress', function(e) { if(e.key === 'Enter') { e.preventDefault(); sendChatMessage(); } });
+
+        function openTelegramPay() { window.open("https://t.me/PRRRIL", "_blank"); }
+
+        // التحقق من كود الـ VIP
+        function verifyVipCode() {
+            const enteredCode = document.getElementById('vipCodeInput').value.trim().toLowerCase();
+            if (enteredCode === SECRET_VIP_CODE) {
+                alert("👑 تم التحقق بنجاح! تم فتح قسم المافيا الذهبي.");
+                showScreen('homeScreen');
+            } else {
+                alert("❌ كود الـ VIP غير صحيح! يرجى التواصل مع الإدارة لتفعيل حسابكم.");
+            }
+        }
+
+        function showScreen(screenId) {
+            document.querySelectorAll('.game-zone .screen').forEach(s => s.classList.remove('active'));
+            document.getElementById(screenId).classList.add('active');
+        }
+
+        function createRoom() {
+            const adminInput = document.getElementById('adminName').value.trim();
+            if (!adminInput) return alert("الرجاء كتابة الاسم أولاً!");
+            myName = adminInput; roomCode = Math.floor(1000 + Math.random() * 9000).toString(); isAdmin = true;
+
+            db.ref('mafia_rooms/' + roomCode).set({
+                admin: myName, status: "lobby", players: [myName],
+                roles: {}, alive: { [myName]: true }, nightActions: {}, dayVotes: {}, dayResult: ""
+            }).then(() => {
+                listenToRoom(); listenToChat(); showScreen('lobbyScreen');
+                document.getElementById('startGameBtn').style.display = 'block';
+                document.getElementById('waitingMessage').style.display = 'none';
+            });
+        }
+
+        function joinRoom() {
+            const codeInput = document.getElementById('joinCode').value.trim();
+            const nameInput = document.getElementById('playerName').value.trim();
+            if (!codeInput || !nameInput) return alert("الرجاء ملء جميع الحقول المطلوبة!");
+            roomCode = codeInput; myName = nameInput;
+
+            db.ref('mafia_rooms/' + roomCode).once('value').then((snapshot) => {
+                if (snapshot.exists()) {
+                    let data = snapshot.val();
+                    let currentPlayers = data.players || [];
+                    if (data.status !== "lobby") return alert("عذراً، اللعبة بدأت بالفعل في هذه الغرفة!");
+                    if (!currentPlayers.includes(myName)) {
+                        currentPlayers.push(myName);
+                        db.ref('mafia_rooms/' + roomCode).update({
+                            players: currentPlayers,
+                            [`alive/${myName}`]: true
+                        }).then(() => {
+                            isAdmin = false; listenToRoom(); listenToChat(); showScreen('lobbyScreen');
+                        });
+                    }
+                } else { alert("عذراً، الغرفة غير موجودة!"); }
+            });
+        }
+
+        function listenToRoom() {
+            db.ref('mafia_rooms/' + roomCode).on('value', (snapshot) => {
+                const data = snapshot.val(); if (!data) return;
+                
+                if (myName !== "" && data.players && !data.players.includes(myName)) {
+                    db.ref('mafia_rooms/' + roomCode).off(); db.ref('mafia_chats/' + roomCode).off();
+                    alert("لقد تم طردك من الغرفة من قِبل مؤسس اللعبة! 🚷");
+                    location.reload(); return;
+                }
+
+                isAlive = (data.alive && data.alive[myName] !== undefined) ? data.alive[myName] : true;
+                updateChatAccessibility();
+                renderGameProgress(data);
+            });
+        }
+
+        function kickPlayer(playerToKick) {
+            if(!isAdmin || playerToKick === myName) return;
+            db.ref('mafia_rooms/' + roomCode).once('value').then(snap => {
+                let updatedPlayers = (snap.val().players || []).filter(p => p !== playerToKick);
+                db.ref('mafia_rooms/' + roomCode).update({ players: updatedPlayers }).then(() => {
+                    sendSystemMessage(`🚷 قام مؤسس المدينة بطرد اللاعب [ ${playerToKick} ] من الغرفة.`);
+                });
+            });
+        }
+
+        function updateChatAccessibility() {
+            const badge = document.getElementById('chatStatusBadge');
+            const area = document.getElementById('chatInputArea');
+            if (!isAlive) {
+                badge.innerText = "● مراقب (ميت)"; badge.style.color = "var(--accent-red)";
+                area.style.display = "none"; 
+            } else {
+                badge.innerText = "● حي"; badge.style.color = "var(--success-green)";
+                area.style.display = "flex";
+            }
+        }
+
+        function listenToChat() {
+            db.ref('mafia_chats/' + roomCode).on('value', (snapshot) => {
+                const chatBox = document.getElementById('chatMessages'); chatBox.innerHTML = "";
+                const messages = snapshot.val();
+                if (messages) {
+                    Object.values(messages).forEach(m => {
+                        const div = document.createElement('div');
+                        if (m.sender === "SYSTEM") { div.className = "msg system"; div.innerText = m.text; }
+                        else {
+                            div.className = "msg " + (m.sender === myName ? "my" : "other");
+                            const deadTag = m.isSenderAlive ? "" : "<span class='dead-badge'>ميت</span>";
+                            div.innerHTML = `<span class="msg-sender"><span class="vip-badge-inline">VIP</span>${m.sender} ${deadTag}</span>${m.text}`;
+                        }
+                        chatBox.appendChild(div);
+                    });
+                    chatBox.scrollTop = chatBox.scrollHeight;
+                }
+            });
+        }
+
+        function sendChatMessage() {
+            if(!isAlive) return; 
+            const input = document.getElementById('chatInput'); const text = input.value.trim(); if(!text) return;
+            db.ref('mafia_chats/' + roomCode).push({ sender: myName, text: text, isSenderAlive: true, timestamp: Date.now() });
+            input.value = ""; setTimeout(() => { input.focus(); }, 10);
+        }
+
+        function sendSystemMessage(systemText) { db.ref('mafia_chats/' + roomCode).push({ sender: "SYSTEM", text: systemText, timestamp: Date.now() }); }
+
+        function distributeRolesAndStart() {
+            if (!isAdmin) return;
+            db.ref('mafia_rooms/' + roomCode).once('value').then((snapshot) => {
+                const players = snapshot.val().players;
+                if (players.length < 4) return alert("الحد الأدنى لبدء لعبة المافيا والتحقيق هو 4 لاعبين لضمان توازن الأدوار!");
+
+                let shuffled = [...players].sort(() => 0.5 - Math.random());
+                let total = players.length;
+
+                let mafiaCount = (total >= 7) ? 2 : 1;
+                let doctorCount = 1;
+                let detectiveCount = (total >= 6) ? 1 : 0;
+
+                let roles = {};
+                shuffled.forEach((p, idx) => {
+                    if (idx < mafiaCount) roles[p] = "mafia";
+                    else if (idx < mafiaCount + doctorCount) roles[p] = "doctor";
+                    else if (idx < mafiaCount + doctorCount + detectiveCount) roles[p] = "detective";
+                    else roles[p] = "citizen";
+                });
+
+                db.ref('mafia_chats/' + roomCode).remove();
+                db.ref('mafia_rooms/' + roomCode).update({
+                    status: "role_reveal",
+                    roles: roles,
+                    nightActions: {},
+                    dayVotes: {},
+                    dayResult: ""
+                });
+            });
+        }
+
+        function renderGameProgress(data) {
+            document.getElementById('globalChat').style.display = (data.status === "lobby" || data.status === "role_reveal") ? 'none' : 'flex';
+
+            if (data.status === "lobby") {
+                document.getElementById('roomCodeDisplay').innerText = roomCode;
+                document.getElementById('playerCount').innerText = data.players.length;
+                const listElement = document.getElementById('playerList'); listElement.innerHTML = "";
+                data.players.forEach(p => {
+                    const li = document.createElement('li');
+                    li.innerHTML = (isAdmin && p !== myName) ? `<span><span class="vip-badge-inline">VIP</span>${p}</span> <button class="kick-btn" onclick="kickPlayer('${p}')">طرد ❌</button>` : `<span><span class="vip-badge-inline">VIP</span>${p}</span>` + (p === data.admin ? " 👑" : "");
+                    listElement.appendChild(li);
+                });
+                showScreen('lobbyScreen');
+            }
+
+            if (data.status === "role_reveal") {
+                myRole = data.roles[myName];
+                const info = roleDetails[myRole];
+                document.getElementById('roleImage').src = info.img;
+                document.getElementById('roleTitle').innerText = info.title;
+                document.getElementById('roleDesc').innerText = info.desc;
+                showScreen('roleScreen');
+            }
+
+            if (data.status === "night") {
+                showScreen('nightScreen');
+                document.getElementById('adminEndNightBtn').style.display = isAdmin ? 'block' : 'none';
+                setupNightActions(data);
+            }
+
+            if (data.status === "day") {
+                showScreen('dayScreen');
+                document.getElementById('dayReportBox').innerText = data.dayResult;
+                document.getElementById('adminRevealDayBtn').style.display = isAdmin ? 'block' : 'none';
+                setupDayVoting(data);
+            }
+
+            if (data.status === "game_over") {
+                showScreen('gameOverScreen');
+                document.getElementById('btnResetGame').style.display = isAdmin ? 'block' : 'none';
+                document.getElementById('winnerTitle').innerText = data.winnerMsg;
+                document.getElementById('gameOverDetails').innerText = "شكراً لكم على اللعب عبر منصة SmartZone الموحدة.";
+            }
+        }
+
+        function enterNightPhase() {
+            if(isAdmin) db.ref('mafia_rooms/' + roomCode).update({ status: "night" });
+        }
+
+        function setupNightActions(data) {
+            const instr = document.getElementById('nightInstructions');
+            const grid = document.getElementById('nightActionGrid');
+            grid.innerHTML = "";
+
+            if (!isAlive) {
+                instr.innerText = "لقد قُتلت.. لا يمكنك اتخاذ أي إجراءات في الليل، انتظر الصباح لمتابعة النقاشات.";
+                return;
+            }
+
+            const alivePlayers = data.players.filter(p => data.alive[p] === true);
+            const currentActions = data.nightActions || {};
+
+            if (myRole === "mafia") {
+                instr.innerText = "🩸 اختر أحد مواطني المدينة لتصفيته هذه الليلة:";
+                alivePlayers.forEach(p => {
+                    const btn = document.createElement('button'); btn.className = "action-btn" + (currentActions.mafiaTarget === p ? " selected" : "");
+                    btn.innerText = p;
+                    btn.onclick = () => db.ref(`mafia_rooms/${roomCode}/nightActions/mafiaTarget`).set(p);
+                    grid.appendChild(btn);
+                });
+            } 
+            else if (myRole === "doctor") {
+                instr.innerText = "🩺 اختر شخصاً لإنقاذه وحمايته الليلة (لا يمكنك اختيار نفس الشخص مرتين متتاليتين):";
+                alivePlayers.forEach(p => {
+                    const btn = document.createElement('button'); btn.className = "action-btn" + (currentActions.doctorTarget === p ? " selected" : "");
+                    btn.innerText = p;
+                    if (p === lastSavedTarget) { btn.disabled = true; btn.innerText += " (محمي الليلة السابقة)"; }
+                    btn.onclick = () => { db.ref(`mafia_rooms/${roomCode}/nightActions/doctorTarget`).set(p); };
+                    grid.appendChild(btn);
+                });
+            } 
+            else if (myRole === "detective") {
+                instr.innerText = "🔍 اختر لاعباً واحداً للتحقيق في هويته ومعرفة إن كان مافيا أم مواطناً صالحاً:";
+                alivePlayers.forEach(p => {
+                    const btn = document.createElement('button'); btn.className = "action-btn" + (currentActions.detectiveQuery === p ? " selected" : "");
+                    btn.innerText = p;
+                    if (p === myName) btn.disabled = true;
+                    btn.onclick = () => {
+                        db.ref(`mafia_rooms/${roomCode}/nightActions/detectiveQuery`).set(p);
+                        const isTargetMafia = (data.roles[p] === "mafia") ? "هو [ مافيا 🩸 ]" : "هو [ مواطن صالح 🛡️ ]";
+                        alert(`نتائج التحقيق السري: اللاعب [ ${p} ] ${isTargetMafia}`);
+                    };
+                    grid.appendChild(btn);
+                });
+            } 
+            else {
+                instr.innerText = "🛡️ أنت مواطن صالح.. نم بسلام في فراشك، فالقدرات الخاصة تعمل الآن في الظلام.";
+            }
+        }
+
+        function endNightAndProcessActions() {
+            if (!isAdmin) return;
+            db.ref('mafia_rooms/' + roomCode).once('value').then(snap => {
+                const data = snap.val();
+                const actions = data.nightActions || {};
+                let killed = actions.mafiaTarget || null;
+                let saved = actions.doctorTarget || null;
+
+                if (saved) lastSavedTarget = saved;
+
+                let dayResultText = "";
+                let updatedAlive = { ...data.alive };
+
+                if (killed && killed !== saved) {
+                    updatedAlive[killed] = false;
+                    dayResultText = `☀️ أشرقت الشمس بظلال حزينة.. استيقظت المدينة على خبر مقتل المواطن: [ ${killed} ] 🩸`;
+                } else {
+                    dayResultText = "☀️ أشرقت الشمس بسلام.. استيقظت المدينة بكامل مواطنيها ولم يمت أحد هذه الليلة! 🎉";
+                }
+
+                db.ref('mafia_rooms/' + roomCode).update({
+                    alive: updatedAlive,
+                    nightActions: {},
+                    dayResult: dayResultText
+                }).then(() => {
+                    checkGameEndCondition(updatedAlive, data.roles, "day");
+                });
+            });
+        }
+
+        function setupDayVoting(data) {
+            const grid = document.getElementById('dayVoteGrid'); grid.innerHTML = "";
+            const currentVotes = data.dayVotes || {};
+            const alivePlayers = data.players.filter(p => data.alive[p] === true);
+            
+            const totalVoted = Object.keys(currentVotes).length;
+            document.getElementById('dayVotingStatus').innerText = `الأصوات المجموعة: ${totalVoted} من ${alivePlayers.length}`;
+
+            if (!isAlive) {
+                grid.innerHTML = "<p style='color: var(--accent-red); width: 100%; text-align: center;'>أنت ميت.. يمكنك مشاهدة سير التصويت هنا ومراقبة الشات فقط دون تدخل.</p>";
+                return;
+            }
+
+            alivePlayers.forEach(p => {
+                const btn = document.createElement('button'); btn.className = "action-btn" + (currentVotes[myName] === p ? " selected" : "");
+                btn.innerText = `${p} (${Object.values(currentVotes).filter(v => v === p).length} صوت)`;
+                btn.onclick = () => db.ref(`mafia_rooms/${roomCode}/dayVotes/${myName}`).set(p);
+                grid.appendChild(btn);
+            });
+
+            const skipCount = Object.values(currentVotes).filter(v => v === "SKIP_VOTE").length;
+            const skipBtn = document.createElement('button');
+            skipBtn.className = "action-btn skip-style" + (currentVotes[myName] === "SKIP_VOTE" ? " selected" : "");
+            skipBtn.innerText = `⏭️ تخطي التصويت العلني (${skipCount} صوت)`;
+            skipBtn.onclick = () => db.ref(`mafia_rooms/${roomCode}/dayVotes/${myName}`).set("SKIP_VOTE");
+            grid.appendChild(skipBtn);
+        }
+
+        function processDayVotes() {
+            if (!isAdmin) return;
+            db.ref('mafia_rooms/' + roomCode).once('value').then(snap => {
+                const data = snap.val();
+                const votes = data.dayVotes || {};
+                const alivePlayers = data.players.filter(p => data.alive[p] === true);
+
+                let voteCounts = { "SKIP_VOTE": 0 };
+                alivePlayers.forEach(p => voteCounts[p] = 0);
+                Object.values(votes).forEach(v => { if(voteCounts[v] !== undefined) voteCounts[v]++; });
+
+                let maxVotes = -1; let votedOut = ""; let isTie = false;
+                for (let target in voteCounts) {
+                    if (voteCounts[target] > maxVotes) { maxVotes = voteCounts[target]; votedOut = target; isTie = false; }
+                    else if (voteCounts[target] === maxVotes) { isTie = true; }
+                }
+
+                let resultMsg = "";
+                let updatedAlive = { ...data.alive };
+
+                if (isTie || votedOut === "SKIP_VOTE" || maxVotes === 0) {
+                    resultMsg = "⏭️ قررت المدينة تخطي التصويت لهذه الجولة دون نفي أحد!";
+                } else {
+                    updatedAlive[votedOut] = false;
+                    const isMafia = (data.roles[votedOut] === "mafia");
+                    resultMsg = isMafia 
+                        ? `⚖️ نجحت العدالة! تم نفي [ ${votedOut} ] وتبين أنه بالفعل [ مافيا 🩸 ]!`
+                        : `❌ كارثة! تم نفي [ ${votedOut} ] وتبين أنه [ مواطن بريء ومظلوم 🛡️ ]!`;
+                }
+
+                db.ref('mafia_rooms/' + roomCode).update({
+                    alive: updatedAlive,
+                    dayVotes: {}
+                }).then(() => {
+                    const resultBox = document.getElementById('dayResultBox');
+                    resultBox.style.display = "block"; resultBox.innerText = resultMsg;
+                    document.getElementById('adminNextNightBtn').style.display = "block";
+                    document.getElementById('adminRevealDayBtn').style.display = "none";
+                    
+                    sendSystemMessage(`📢 نتيجة المحكمة: ${resultMsg}`);
+                    checkGameEndCondition(updatedAlive, data.roles, "day_reveal");
+                });
+            });
+        }
+
+        function startNextNight() {
+            if(isAdmin) {
+                document.getElementById('dayResultBox').style.display = "none";
+                document.getElementById('adminNextNightBtn').style.display = "none";
+                db.ref('mafia_rooms/' + roomCode).update({ status: "night" });
+            }
+        }
+
+        function checkGameEndCondition(aliveStatus, roles, nextTargetStatus) {
+            let mafiaAlive = 0; let innocentsAlive = 0;
+            for (let player in aliveStatus) {
+                if (aliveStatus[player] === true) {
+                    if (roles[player] === "mafia") mafiaAlive++; else innocentsAlive++;
+                }
+            }
+
+            if (mafiaAlive === 0) {
+                db.ref('mafia_rooms/' + roomCode).update({ status: "game_over", winnerMsg: "🎉 انتصرت المدينة! تم القضاء على جميع أفراد المافيا بالكامل." });
+            } else if (mafiaAlive >= innocentsAlive) {
+                db.ref('mafia_rooms/' + roomCode).update({ status: "game_over", winnerMsg: "🩸 فازت المافيا! أحكمت العصابة قبضتها وسيطرت على المدينة بالكامل." });
+            } else {
+                if (nextTargetStatus === "day") db.ref('mafia_rooms/' + roomCode).update({ status: "day" });
+            }
+        }
+
+        function resetGameToLobby() {
+            if (!isAdmin) return;
+            db.ref('mafia_rooms/' + roomCode).update({
+                status: "lobby", roles: {}, alive: { [myName]: true }, nightActions: {}, dayVotes: {}, dayResult: ""
+            }).then(() => {
+                db.ref('mafia_chats/' + roomCode).remove();
+                lastSavedTarget = "";
+            });
+        }
+    </script>
+</body>
+</html>
