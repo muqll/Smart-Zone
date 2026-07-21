@@ -5,25 +5,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SmartZone | مكتبة الألعاب الذكية الموحدة</title>
     
-    <!-- استدعاء خط ألعاب قيمنق احترافي (Orbitron) للشعار -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@800;900&family=Tajawal:wght@500;700;800&display=swap" rel="stylesheet">
 
     <style>
         :root {
-            /* درجات الرمادي الفضائي (Space Gray) */
             --bg-body: #08090b;
             --bg-panel: rgba(20, 22, 26, 0.85);
             --bg-card-hover: #1e2126;
             --border-color: rgba(255, 255, 255, 0.08);
-
-            /* درجات العنابي والتوهج (Burgundy Glow) */
             --burgundy-main: #800020;
             --burgundy-light: #b30e38;
             --burgundy-glow: rgba(179, 14, 56, 0.4);
-
-            /* النصوص والعناصر */
             --text-light: #f0f2f5;
             --text-muted: #8b919e;
             --vip-gold: #f59e0b;
@@ -44,7 +38,7 @@
             overflow-x: hidden;
         }
 
-        /* ================= خلفية مزخرفة ومتحركة ================= */
+        /* خلفية الصفحة */
         .animated-bg {
             position: fixed;
             top: 0; left: 0; width: 100vw; height: 100vh;
@@ -69,24 +63,7 @@
             100% { transform: perspective(600px) rotateX(60deg) translateY(50px); }
         }
 
-        .glow-orb {
-            position: absolute;
-            width: 350px; height: 350px;
-            background: radial-gradient(circle, var(--burgundy-glow) 0%, transparent 70%);
-            border-radius: 50%;
-            filter: blur(50px);
-            animation: pulseGlow 8s ease-in-out infinite alternate;
-        }
-
-        .orb-1 { top: 10%; left: 15%; }
-        .orb-2 { bottom: 10%; right: 15%; animation-delay: -4s; }
-
-        @keyframes pulseGlow {
-            0% { transform: scale(0.8) translateY(0); opacity: 0.5; }
-            100% { transform: scale(1.2) translateY(-30px); opacity: 0.9; }
-        }
-
-        /* ================= الحاوية الرئيسية ================= */
+        /* الحاوية الرئيسية */
         .platform-wrapper {
             display: flex;
             width: 100%;
@@ -101,7 +78,7 @@
             z-index: 1;
         }
 
-        /* ================= القائمة الجانبية (Sidebar) ================= */
+        /* القائمة الجانبية (الشاشات الكبيرة) */
         .sidebar {
             width: 270px;
             background-color: rgba(10, 11, 14, 0.95);
@@ -110,7 +87,6 @@
             display: flex;
             flex-direction: column;
             gap: 25px;
-            transition: right 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .brand-logo {
@@ -127,14 +103,6 @@
             padding-bottom: 15px;
             border-bottom: 1px solid var(--border-color);
             position: relative;
-        }
-
-        .brand-logo::after {
-            content: '';
-            position: absolute;
-            bottom: -1px; left: 25%; width: 50%; height: 2px;
-            background: var(--burgundy-light);
-            box-shadow: 0 0 8px var(--burgundy-light);
         }
 
         .nav-group {
@@ -164,16 +132,11 @@
             align-items: center;
             justify-content: space-between;
             transition: all 0.25s ease;
-            background: transparent;
-            border: 1px solid transparent;
-            cursor: pointer;
         }
 
         .nav-link:hover {
             background-color: rgba(179, 14, 56, 0.15);
-            border-color: rgba(179, 14, 56, 0.3);
             color: #fff;
-            transform: translateX(-4px);
         }
 
         .nav-link.active {
@@ -189,15 +152,9 @@
             padding: 3px 8px;
             border-radius: 6px;
             border: 1px solid var(--border-color);
-            font-weight: 500;
         }
 
-        .nav-link:hover .badge-soon {
-            border-color: var(--burgundy-light);
-            color: var(--burgundy-light);
-        }
-
-        /* ================= المحتوى الرئيسي ================= */
+        /* المحتوى الرئيسي */
         .main-content {
             flex: 1;
             padding: 40px;
@@ -217,36 +174,20 @@
         .content-header h1 {
             font-size: 28px;
             font-weight: 800;
-            background: linear-gradient(135deg, #ffffff 60%, var(--text-muted) 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
         }
 
-        /* زر ☰ للهاتف */
         .menu-toggle {
             display: none;
             background: rgba(179, 14, 56, 0.25);
             border: 1px solid var(--burgundy-light);
             color: #fff;
-            font-size: 20px;
-            padding: 8px 14px;
+            font-size: 22px;
+            padding: 8px 16px;
             border-radius: 8px;
             cursor: pointer;
         }
 
-        /* الخلفية المظلمة للهاتف عند فتح القائمة */
-        .sidebar-overlay {
-            display: none;
-            position: fixed;
-            top: 0; left: 0; width: 100vw; height: 100vh;
-            background: rgba(0, 0, 0, 0.75);
-            z-index: 998;
-        }
-        .sidebar-overlay.active {
-            display: block;
-        }
-
-        /* شبكة كروت الألعاب */
+        /* الكروت */
         .games-library-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
@@ -260,17 +201,8 @@
             text-decoration: none;
             color: var(--text-light);
             border: 1px solid var(--border-color);
-            transition: all 0.35s cubic-bezier(0.165, 0.84, 0.44, 1);
-            display: flex;
-            flex-direction: column;
+            transition: all 0.3s ease;
             position: relative;
-        }
-
-        .game-card-v:hover {
-            transform: translateY(-8px);
-            border-color: var(--burgundy-light);
-            background-color: var(--bg-card-hover);
-            box-shadow: 0 15px 30px rgba(0,0,0,0.9), 0 0 25px var(--burgundy-glow);
         }
 
         .game-cover-wrapper {
@@ -286,24 +218,9 @@
             object-fit: cover;
         }
 
-        .game-details {
-            padding: 16px;
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-        }
-
-        .game-title {
-            font-size: 15px;
-            font-weight: 700;
-            margin-bottom: 6px;
-        }
-
-        .game-genre {
-            font-size: 12px;
-            color: var(--text-muted);
-        }
+        .game-details { padding: 16px; }
+        .game-title { font-size: 15px; font-weight: 700; margin-bottom: 6px; }
+        .game-genre { font-size: 12px; color: var(--text-muted); }
 
         .card-badge {
             font-size: 10px;
@@ -311,8 +228,7 @@
             border-radius: 6px;
             font-weight: 800;
             position: absolute;
-            top: 10px;
-            left: 10px;
+            top: 10px; left: 10px;
             z-index: 2;
         }
         .badge-free { background: #10b981; color: black; }
@@ -324,49 +240,59 @@
             font-size: 12px;
             color: var(--text-muted);
             text-align: center;
-            border-top: 1px solid var(--border-color);
         }
 
-        /* ================= التجاوب الكامل مع الموبايل ================= */
+        /* خلفية سوداء للموبايل عند فتح القائمة */
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 9998;
+        }
+
+        .sidebar-overlay.active {
+            display: block;
+        }
+
+        /* ================= تعديلات الموبايل القاطعة ================= */
         @media (max-width: 850px) {
-            body {
-                padding: 0; /* إلغاء حواف الجسم لشاشة الهاتف */
-                align-items: flex-start;
-            }
+            body { padding: 0; }
 
             .platform-wrapper {
                 border-radius: 0;
                 border: none;
-                box-shadow: none;
-                backdrop-filter: none; /* إلغاء التأثير حتى لا يحبس القائمة بالمنتصف */
+                backdrop-filter: none;
                 -webkit-backdrop-filter: none;
-                min-height: 100vh;
             }
 
-            .menu-toggle {
-                display: block;
-            }
+            .menu-toggle { display: block; }
 
+            /* إخفاء القائمة تماماً بالـ display والـ opacity في الموبايل */
             .sidebar {
                 position: fixed;
                 top: 0;
-                right: -100%; /* إخفاء خارج الشاشة بالكامل */
+                right: 0;
                 width: 280px;
-                max-width: 80vw;
                 height: 100vh;
-                background-color: #0c0d10 !important;
-                z-index: 9999;
-                box-shadow: -5px 0 25px rgba(0,0,0,0.9);
+                background-color: #0b0c0f !important;
+                z-index: 99999;
+                opacity: 0;
+                visibility: hidden;
+                pointer-events: none;
+                transform: translateX(100%);
+                transition: transform 0.3s ease, opacity 0.3s ease, visibility 0.3s ease;
             }
 
+            /* إظهار القائمة فقط عند إضافة كلاس active */
             .sidebar.active {
-                right: 0; /* الظهور التام ملاصقاً لليمين */
+                opacity: 1;
+                visibility: visible;
+                pointer-events: auto;
+                transform: translateX(0);
             }
 
-            .main-content {
-                padding: 20px 15px;
-                width: 100%;
-            }
+            .main-content { padding: 20px 15px; }
 
             .games-library-grid {
                 grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
@@ -379,59 +305,38 @@
 
     <div class="animated-bg">
         <div class="bg-grid"></div>
-        <div class="glow-orb orb-1"></div>
-        <div class="glow-orb orb-2"></div>
     </div>
 
-    <!-- غطاء معتم للشاشة عند فتح القائمة -->
-    <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleMenu()"></div>
+    <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeMenu()"></div>
 
     <div class="platform-wrapper">
-        <!-- القائمة الجانبية -->
         <aside class="sidebar" id="sidebar">
             <div class="brand-logo">SMARTZONE</div>
             
             <nav class="nav-group">
                 <span class="nav-section-title">القائمة الرئيسية</span>
-                <a href="index.html" class="nav-link active">
-                    <span>📖 المكتبة</span>
-                </a>
-                <a href="#" class="nav-link">
-                    <span>🛒 المتجر</span>
-                    <span class="badge-soon">قريباً...</span>
-                </a>
-                <a href="#" class="nav-link">
-                    <span>👥 المجتمع</span>
-                    <span class="badge-soon">قريباً...</span>
-                </a>
+                <a href="index.html" class="nav-link active"><span>📖 المكتبة</span></a>
+                <a href="#" class="nav-link"><span>🛒 المتجر</span><span class="badge-soon">قريباً...</span></a>
+                <a href="#" class="nav-link"><span>👥 المجتمع</span><span class="badge-soon">قريباً...</span></a>
             </nav>
 
             <nav class="nav-group">
                 <span class="nav-section-title">ألعابي</span>
-                <a href="#" class="nav-link">
-                    <span>⚪ مثبتة</span>
-                </a>
-                <a href="#" class="nav-link">
-                    <span>⭐ المفضلة</span>
-                </a>
+                <a href="#" class="nav-link"><span>⚪ مثبتة</span></a>
+                <a href="#" class="nav-link"><span>⭐ المفضلة</span></a>
             </nav>
         </aside>
 
-        <!-- المحتوى الرئيسي -->
         <main class="main-content">
             <header class="content-header">
                 <h1>مكتبة الألعاب</h1>
-                <!-- زر الـ ☰ للموبايل -->
                 <button class="menu-toggle" onclick="toggleMenu()">☰</button>
             </header>
 
             <div class="games-library-grid">
-
                 <a href="salfa.html" class="game-card-v">
-                    <span class="card-badge badge-free"> مجاني </span>
-                    <div class="game-cover-wrapper">
-                        <img src="salfa-cover.jpg" alt="برا السالفة Cover">
-                    </div>
+                    <span class="card-badge badge-free">مجاني</span>
+                    <div class="game-cover-wrapper"><img src="salfa-cover.jpg" alt="برا السالفة"></div>
                     <div class="game-details">
                         <div class="game-title">لعبة برا السالفة</div>
                         <div class="game-genre">فكاهة | شات</div>
@@ -439,10 +344,8 @@
                 </a>
 
                 <a href="quiz.html" class="game-card-v">
-                    <span class="card-badge badge-free"> مجاني </span>
-                    <div class="game-cover-wrapper">
-                        <img src="quiz-cover.jpg" alt="QuizZone Cover">
-                    </div>
+                    <span class="card-badge badge-free">مجاني</span>
+                    <div class="game-cover-wrapper"><img src="quiz-cover.jpg" alt="QuizZone"></div>
                     <div class="game-details">
                         <div class="game-title">تحدي الأسئلة والسرعة</div>
                         <div class="game-genre">ذكاء | جماعية</div>
@@ -451,9 +354,7 @@
 
                 <a href="rsm.html" class="game-card-v">
                     <span class="card-badge badge-vip">👑 VIP</span>
-                    <div class="game-cover-wrapper">
-                        <img src="rsm-cover.jpg" alt="لعبة الرسم Cover">
-                    </div>
+                    <div class="game-cover-wrapper"><img src="rsm-cover.jpg" alt="خمن الرسمة"></div>
                     <div class="game-details">
                         <div class="game-title">لعبة خمن الرسمة</div>
                         <div class="game-genre">إبداع | جماعية</div>
@@ -462,15 +363,12 @@
 
                 <a href="mafia.html" class="game-card-v">
                     <span class="card-badge badge-vip">👑 VIP</span>
-                    <div class="game-cover-wrapper">
-                        <img src="mafia-cover.jpg" alt="SmartMafia Cover">
-                    </div>
+                    <div class="game-cover-wrapper"><img src="mafia-cover.jpg" alt="SmartMafia"></div>
                     <div class="game-details">
                         <div class="game-title">لعبة مافيا</div>
                         <div class="game-genre">استراتيجية | غموض</div>
                     </div>
                 </a>
-
             </div>
 
             <footer class="footer">
@@ -481,8 +379,15 @@
 
     <script>
         function toggleMenu() {
-            document.getElementById('sidebar').classList.toggle('active');
-            document.getElementById('sidebarOverlay').classList.toggle('active');
+            var sidebar = document.getElementById('sidebar');
+            var overlay = document.getElementById('sidebarOverlay');
+            sidebar.classList.toggle('active');
+            overlay.classList.toggle('active');
+        }
+
+        function closeMenu() {
+            document.getElementById('sidebar').classList.remove('active');
+            document.getElementById('sidebarOverlay').classList.remove('active');
         }
     </script>
 </body>
