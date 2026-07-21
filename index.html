@@ -23,11 +23,9 @@
             --vip-gold: #f59e0b;
         }
 
-        /* منع التمرير الأفقي نهائياً على كل المستويات */
         html, body {
             max-width: 100%;
             overflow-x: hidden !important;
-            position: relative;
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -83,7 +81,7 @@
             z-index: 1;
         }
 
-        /* القائمة الجانبية (للشاشات الكبيرة فقط) */
+        /* ================= القائمة الجانبية (تظهر فقط في الكمبيوتر) ================= */
         .sidebar {
             width: 270px;
             background-color: rgba(10, 11, 14, 0.95);
@@ -180,38 +178,16 @@
             font-weight: 800;
         }
 
-        /* شريط التنقل الخاص بالهاتف (Mobile Navigation Tabs) */
-        .mobile-nav-bar {
+        /* شعار الجوال (يظهر فقط في الجوال بالهيدر) */
+        .mobile-brand {
             display: none;
-            overflow-x: auto;
-            white-space: nowrap;
-            padding: 10px 0 15px 0;
-            margin-bottom: 15px;
-            border-bottom: 1px solid var(--border-color);
-            -webkit-overflow-scrolling: touch;
-        }
-
-        .mobile-nav-bar::-webkit-scrollbar {
-            display: none; /* إخفاء شريط التمرير لمظهر أنيق */
-        }
-
-        .mobile-nav-item {
-            display: inline-block;
-            padding: 8px 16px;
-            margin-left: 8px;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid var(--border-color);
-            border-radius: 20px;
-            color: var(--text-light);
-            text-decoration: none;
-            font-size: 13px;
-            font-weight: 700;
-        }
-
-        .mobile-nav-item.active {
-            background: var(--burgundy-light);
-            border-color: var(--burgundy-light);
-            box-shadow: 0 0 10px var(--burgundy-glow);
+            font-family: 'Orbitron', sans-serif;
+            font-size: 20px;
+            font-weight: 900;
+            font-style: italic;
+            background: linear-gradient(135deg, #ffffff 30%, var(--burgundy-light) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
 
         /* شبكة الكروت */
@@ -269,7 +245,7 @@
             text-align: center;
         }
 
-        /* ================= تحويل التنسيق بالكامل في الموبايل ================= */
+        /* ================= تخصيص الموبايل النظيف ================= */
         @media (max-width: 850px) {
             body { padding: 0; }
 
@@ -281,41 +257,37 @@
                 flex-direction: column;
             }
 
-            /* إلغاء القائمة الجانبية في الهاتف نهائياً لضمان النظافة والأداء */
+            /* إخفاء القائمة الجانبية تماماً في الجوال */
             .sidebar {
                 display: none !important;
             }
 
-            /* إظهار شريط التنقل الأفقي السلس بدلاً منها */
-            .mobile-nav-bar {
+            /* إظهار اسم المنصة في الهيدر العلوي بشكل جميل */
+            .mobile-brand {
                 display: block;
             }
 
             .main-content { 
-                padding: 15px; 
+                padding: 20px 15px; 
             }
 
             .content-header {
-                margin-bottom: 15px;
-                padding-bottom: 10px;
+                margin-bottom: 20px;
+                padding-bottom: 12px;
             }
 
             .content-header h1 {
-                font-size: 22px;
+                font-size: 20px;
             }
 
+            /* ترتيب الألعاب بشكل ثنائي جذاب متناسق للجوال */
             .games-library-grid {
-                grid-template-columns: repeat(2, 1fr); /* كارتين في كل صف بالضبط لترتيب مثالي */
+                grid-template-columns: repeat(2, 1fr);
                 gap: 12px;
             }
 
-            .game-details {
-                padding: 10px;
-            }
-
-            .game-title {
-                font-size: 13px;
-            }
+            .game-details { padding: 10px; }
+            .game-title { font-size: 13px; }
         }
     </style>
 </head>
@@ -326,7 +298,7 @@
     </div>
 
     <div class="platform-wrapper">
-        <!-- القائمة الجانبية (تظهر فقط في أجهزة الكمبيوتر والأيباد) -->
+        <!-- القائمة الجانبية: تظهر في الشاشات الكبيرة فقط -->
         <aside class="sidebar">
             <div class="brand-logo">SMARTZONE</div>
             
@@ -348,15 +320,8 @@
         <main class="main-content">
             <header class="content-header">
                 <h1>مكتبة الألعاب</h1>
+                <div class="mobile-brand">SMARTZONE</div>
             </header>
-
-            <!-- شريط خيارات أملس يظهر فقط على الآيفون/الموبايل مع التصفح السريع -->
-            <div class="mobile-nav-bar">
-                <a href="index.html" class="mobile-nav-item active">📖 المكتبة</a>
-                <a href="#" class="mobile-nav-item">🛒 المتجر</a>
-                <a href="#" class="mobile-nav-item">👥 المجتمع</a>
-                <a href="#" class="mobile-nav-item">⭐ المفضلة</a>
-            </div>
 
             <div class="games-library-grid">
                 <a href="salfa.html" class="game-card-v">
