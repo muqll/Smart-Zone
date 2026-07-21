@@ -2,7 +2,7 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>SmartZone | مكتبة الألعاب الذكية الموحدة</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -23,6 +23,13 @@
             --vip-gold: #f59e0b;
         }
 
+        /* منع التمرير الأفقي نهائياً على كل المستويات */
+        html, body {
+            max-width: 100%;
+            overflow-x: hidden !important;
+            position: relative;
+        }
+
         * { box-sizing: border-box; margin: 0; padding: 0; }
 
         body {
@@ -34,14 +41,12 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            position: relative;
-            overflow-x: hidden;
         }
 
         /* خلفية الصفحة */
         .animated-bg {
             position: fixed;
-            top: 0; left: 0; width: 100vw; height: 100vh;
+            top: 0; left: 0; width: 100%; height: 100%;
             z-index: -1;
             overflow: hidden;
             background: radial-gradient(circle at 50% 30%, #17050a 0%, #08090b 70%);
@@ -78,7 +83,7 @@
             z-index: 1;
         }
 
-        /* القائمة الجانبية (الشاشات الكبيرة) */
+        /* القائمة الجانبية (للشاشات الكبيرة فقط) */
         .sidebar {
             width: 270px;
             background-color: rgba(10, 11, 14, 0.95);
@@ -102,7 +107,6 @@
             text-align: center;
             padding-bottom: 15px;
             border-bottom: 1px solid var(--border-color);
-            position: relative;
         }
 
         .nav-group {
@@ -176,18 +180,41 @@
             font-weight: 800;
         }
 
-        .menu-toggle {
+        /* شريط التنقل الخاص بالهاتف (Mobile Navigation Tabs) */
+        .mobile-nav-bar {
             display: none;
-            background: rgba(179, 14, 56, 0.25);
-            border: 1px solid var(--burgundy-light);
-            color: #fff;
-            font-size: 22px;
-            padding: 8px 16px;
-            border-radius: 8px;
-            cursor: pointer;
+            overflow-x: auto;
+            white-space: nowrap;
+            padding: 10px 0 15px 0;
+            margin-bottom: 15px;
+            border-bottom: 1px solid var(--border-color);
+            -webkit-overflow-scrolling: touch;
         }
 
-        /* الكروت */
+        .mobile-nav-bar::-webkit-scrollbar {
+            display: none; /* إخفاء شريط التمرير لمظهر أنيق */
+        }
+
+        .mobile-nav-item {
+            display: inline-block;
+            padding: 8px 16px;
+            margin-left: 8px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            color: var(--text-light);
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+        .mobile-nav-item.active {
+            background: var(--burgundy-light);
+            border-color: var(--burgundy-light);
+            box-shadow: 0 0 10px var(--burgundy-glow);
+        }
+
+        /* شبكة الكروت */
         .games-library-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
@@ -242,20 +269,7 @@
             text-align: center;
         }
 
-        /* خلفية سوداء للموبايل عند فتح القائمة */
-        .sidebar-overlay {
-            display: none;
-            position: fixed;
-            top: 0; left: 0; width: 100vw; height: 100vh;
-            background: rgba(0, 0, 0, 0.8);
-            z-index: 9998;
-        }
-
-        .sidebar-overlay.active {
-            display: block;
-        }
-
-        /* ================= تعديلات الموبايل القاطعة ================= */
+        /* ================= تحويل التنسيق بالكامل في الموبايل ================= */
         @media (max-width: 850px) {
             body { padding: 0; }
 
@@ -264,39 +278,43 @@
                 border: none;
                 backdrop-filter: none;
                 -webkit-backdrop-filter: none;
+                flex-direction: column;
             }
 
-            .menu-toggle { display: block; }
-
-            /* إخفاء القائمة تماماً بالـ display والـ opacity في الموبايل */
+            /* إلغاء القائمة الجانبية في الهاتف نهائياً لضمان النظافة والأداء */
             .sidebar {
-                position: fixed;
-                top: 0;
-                right: 0;
-                width: 280px;
-                height: 100vh;
-                background-color: #0b0c0f !important;
-                z-index: 99999;
-                opacity: 0;
-                visibility: hidden;
-                pointer-events: none;
-                transform: translateX(100%);
-                transition: transform 0.3s ease, opacity 0.3s ease, visibility 0.3s ease;
+                display: none !important;
             }
 
-            /* إظهار القائمة فقط عند إضافة كلاس active */
-            .sidebar.active {
-                opacity: 1;
-                visibility: visible;
-                pointer-events: auto;
-                transform: translateX(0);
+            /* إظهار شريط التنقل الأفقي السلس بدلاً منها */
+            .mobile-nav-bar {
+                display: block;
             }
 
-            .main-content { padding: 20px 15px; }
+            .main-content { 
+                padding: 15px; 
+            }
+
+            .content-header {
+                margin-bottom: 15px;
+                padding-bottom: 10px;
+            }
+
+            .content-header h1 {
+                font-size: 22px;
+            }
 
             .games-library-grid {
-                grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-                gap: 15px;
+                grid-template-columns: repeat(2, 1fr); /* كارتين في كل صف بالضبط لترتيب مثالي */
+                gap: 12px;
+            }
+
+            .game-details {
+                padding: 10px;
+            }
+
+            .game-title {
+                font-size: 13px;
             }
         }
     </style>
@@ -307,10 +325,9 @@
         <div class="bg-grid"></div>
     </div>
 
-    <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeMenu()"></div>
-
     <div class="platform-wrapper">
-        <aside class="sidebar" id="sidebar">
+        <!-- القائمة الجانبية (تظهر فقط في أجهزة الكمبيوتر والأيباد) -->
+        <aside class="sidebar">
             <div class="brand-logo">SMARTZONE</div>
             
             <nav class="nav-group">
@@ -327,11 +344,19 @@
             </nav>
         </aside>
 
+        <!-- المحتوى الرئيسي -->
         <main class="main-content">
             <header class="content-header">
                 <h1>مكتبة الألعاب</h1>
-                <button class="menu-toggle" onclick="toggleMenu()">☰</button>
             </header>
+
+            <!-- شريط خيارات أملس يظهر فقط على الآيفون/الموبايل مع التصفح السريع -->
+            <div class="mobile-nav-bar">
+                <a href="index.html" class="mobile-nav-item active">📖 المكتبة</a>
+                <a href="#" class="mobile-nav-item">🛒 المتجر</a>
+                <a href="#" class="mobile-nav-item">👥 المجتمع</a>
+                <a href="#" class="mobile-nav-item">⭐ المفضلة</a>
+            </div>
 
             <div class="games-library-grid">
                 <a href="salfa.html" class="game-card-v">
@@ -377,18 +402,5 @@
         </main>
     </div>
 
-    <script>
-        function toggleMenu() {
-            var sidebar = document.getElementById('sidebar');
-            var overlay = document.getElementById('sidebarOverlay');
-            sidebar.classList.toggle('active');
-            overlay.classList.toggle('active');
-        }
-
-        function closeMenu() {
-            document.getElementById('sidebar').classList.remove('active');
-            document.getElementById('sidebarOverlay').classList.remove('active');
-        }
-    </script>
 </body>
 </html>
