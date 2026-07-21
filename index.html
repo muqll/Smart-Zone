@@ -106,12 +106,14 @@
         /* ================= 3. القائمة الجانبية (Sidebar) ================= */
         .sidebar {
             width: 270px;
-            background-color: rgba(10, 11, 14, 0.6);
+            background-color: rgba(10, 11, 14, 0.9);
             padding: 35px 20px;
             border-left: 1px solid var(--border-color);
             display: flex;
             flex-direction: column;
             gap: 25px;
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 100;
         }
 
         /* ================= 1. شعار احترافي لقيمنق ================= */
@@ -213,6 +215,9 @@
             margin-bottom: 30px;
             border-bottom: 1px solid var(--border-color);
             padding-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
         .content-header h1 {
@@ -221,6 +226,34 @@
             background: linear-gradient(135deg, #ffffff 60%, var(--text-muted) 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
+        }
+
+        /* زر الهامبرغر للهاتف (مخفي افتراضياً) */
+        .menu-toggle {
+            display: none;
+            background: rgba(179, 14, 56, 0.2);
+            border: 1px solid var(--burgundy-light);
+            color: #fff;
+            font-size: 22px;
+            padding: 6px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .menu-toggle:hover {
+            background: var(--burgundy-light);
+            box-shadow: 0 0 10px var(--burgundy-glow);
+        }
+
+        /* طبقة التظليل خلف القائمة للهاتف */
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            background: rgba(0,0,0,0.7);
+            backdrop-filter: blur(4px);
+            z-index: 90;
         }
 
         /* شبكة كروت الألعاب العمودية */
@@ -312,6 +345,42 @@
             text-align: center;
             border-top: 1px solid var(--border-color);
         }
+
+        /* ================= 4. التجاوب مع الهواتف (Responsive Mobile) ================= */
+        @media (max-width: 850px) {
+            body {
+                padding: 10px;
+            }
+
+            .menu-toggle {
+                display: block; /* إظهار الزر في شاشات الهاتف */
+            }
+
+            .sidebar {
+                position: fixed;
+                top: 0;
+                right: -280px; /* إخفاء القائمة جهة اليمين للهاتف */
+                height: 100vh;
+                box-shadow: -10px 0 30px rgba(0,0,0,0.8);
+            }
+
+            .sidebar.active {
+                transform: translateX(-280px); /* إظهار القائمة عند الضغط */
+            }
+
+            .sidebar-overlay.active {
+                display: block;
+            }
+
+            .main-content {
+                padding: 20px 15px;
+            }
+
+            .games-library-grid {
+                grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+                gap: 15px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -323,9 +392,12 @@
         <div class="glow-orb orb-2"></div>
     </div>
 
+    <!-- طبقة تغطية للشاشة عند فتح القائمة على الموبايل -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
     <div class="platform-wrapper">
         <!-- الشريط الجانبي التفاعلي -->
-        <aside class="sidebar">
+        <aside class="sidebar" id="sidebar">
             <div class="brand-logo">SMARTZONE</div>
             
             <nav class="nav-group">
@@ -358,24 +430,25 @@
         <main class="main-content">
             <header class="content-header">
                 <h1>مكتبة الألعاب</h1>
+                <!-- زر القائمة للأجهزة المحمولة (يوضع على اليسار) -->
+                <button class="menu-toggle" id="menuToggle" aria-label="Open Menu">☰</button>
             </header>
 
             <!-- شبكة الألعاب -->
             <div class="games-library-grid">
 
-                  <!-- 2. لعبة برا السالفة (مجانية الآن) -->
-<a href="salfa.html" class="game-card-v">
-    <span class="card-badge badge-free"> مجاني </span>
-    <div class="game-cover-wrapper">
-        <img src="salfa-cover.jpg" alt="برا السالفة Cover">
-    </div>
-    <div class="game-details">
-        <div class="game-title">لعبة برا السالفة</div>
-        <div class="game-genre">فكاهة | شات</div>
-    </div>
-</a>
+                <!-- 2. لعبة برا السالفة (مجانية الآن) -->
+                <a href="salfa.html" class="game-card-v">
+                    <span class="card-badge badge-free"> مجاني </span>
+                    <div class="game-cover-wrapper">
+                        <img src="salfa-cover.jpg" alt="برا السالفة Cover">
+                    </div>
+                    <div class="game-details">
+                        <div class="game-title">لعبة برا السالفة</div>
+                        <div class="game-genre">فكاهة | شات</div>
+                    </div>
+                </a>
 
-    
                 <!-- 1. لعبة الكويز -->
                 <a href="quiz.html" class="game-card-v">
                     <span class="card-badge badge-free"> مجاني </span>
@@ -388,17 +461,17 @@
                     </div>
                 </a>
 
-                    <!-- 4. لعبة الرسم والتخمين -->
-<a href="rsm.html" class="game-card-v">
-      <span class="card-badge badge-vip">👑 VIP</span>
-    <div class="game-cover-wrapper">
-        <img src="rsm-cover.jpg" alt="لعبة الرسم Cover">
-    </div>
-    <div class="game-details">
-        <div class="game-title">لعبة خمن الرسمة (Draw & Guess)</div>
-        <div class="game-genre">إبداع | جماعية</div>
-    </div>
-</a>
+                <!-- 4. لعبة الرسم والتخمين -->
+                <a href="rsm.html" class="game-card-v">
+                    <span class="card-badge badge-vip">👑 VIP</span>
+                    <div class="game-cover-wrapper">
+                        <img src="rsm-cover.jpg" alt="لعبة الرسم Cover">
+                    </div>
+                    <div class="game-details">
+                        <div class="game-title">لعبة خمن الرسمة (Draw & Guess)</div>
+                        <div class="game-genre">إبداع | جماعية</div>
+                    </div>
+                </a>
 
                 <!-- 3. لعبة المافيا -->
                 <a href="mafia.html" class="game-card-v">
@@ -420,5 +493,19 @@
         </main>
     </div>
 
+    <!-- سكربت التحكم بالقائمة التفاعلية للشاشات الصغيرة -->
+    <script>
+        const menuToggle = document.getElementById('menuToggle');
+        const sidebar = document.getElementById('sidebar');
+        const sidebarOverlay = document.getElementById('sidebarOverlay');
+
+        function toggleMenu() {
+            sidebar.classList.toggle('active');
+            sidebarOverlay.classList.toggle('active');
+        }
+
+        menuToggle.addEventListener('click', toggleMenu);
+        sidebarOverlay.addEventListener('click', toggleMenu);
+    </script>
 </body>
 </html>
