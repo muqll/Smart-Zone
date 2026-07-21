@@ -44,7 +44,7 @@
             overflow-x: hidden;
         }
 
-        /* ================= 2. خلفية مزخرفة ومتحركة للجيمينج ================= */
+        /* ================= خلفية مزخرفة ومتحركة ================= */
         .animated-bg {
             position: fixed;
             top: 0; left: 0; width: 100vw; height: 100vh;
@@ -53,7 +53,6 @@
             background: radial-gradient(circle at 50% 30%, #17050a 0%, #08090b 70%);
         }
 
-        /* شبكة ثلاثية الأبعاد متحركة */
         .bg-grid {
             position: absolute;
             top: -50%; left: -50%; width: 200%; height: 200%;
@@ -70,7 +69,6 @@
             100% { transform: perspective(600px) rotateX(60deg) translateY(50px); }
         }
 
-        /* توهجات ضوئية عائمة */
         .glow-orb {
             position: absolute;
             width: 350px; height: 350px;
@@ -103,20 +101,18 @@
             z-index: 1;
         }
 
-        /* ================= 3. القائمة الجانبية (Sidebar) ================= */
+        /* ================= القائمة الجانبية (Sidebar) ================= */
         .sidebar {
             width: 270px;
-            background-color: rgba(10, 11, 14, 0.9);
+            background-color: rgba(10, 11, 14, 0.95);
             padding: 35px 20px;
             border-left: 1px solid var(--border-color);
             display: flex;
             flex-direction: column;
             gap: 25px;
-            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            z-index: 100;
+            transition: all 0.3s ease-in-out;
         }
 
-        /* ================= 1. شعار احترافي لقيمنق ================= */
         .brand-logo {
             font-family: 'Orbitron', sans-serif;
             font-size: 26px;
@@ -157,7 +153,6 @@
             padding-right: 5px;
         }
 
-        /* أزرار القائمة الجانبية التفاعلية */
         .nav-link {
             text-decoration: none;
             color: var(--text-light);
@@ -187,7 +182,6 @@
             color: #fff;
         }
 
-        /* شارة قريباً للمتجر والمجتمع */
         .badge-soon {
             font-size: 10px;
             background-color: rgba(255, 255, 255, 0.08);
@@ -228,35 +222,31 @@
             -webkit-text-fill-color: transparent;
         }
 
-        /* زر الهامبرغر للهاتف (مخفي افتراضياً) */
+        /* زر ☰ للهاتف */
         .menu-toggle {
             display: none;
-            background: rgba(179, 14, 56, 0.2);
+            background: rgba(179, 14, 56, 0.25);
             border: 1px solid var(--burgundy-light);
             color: #fff;
-            font-size: 22px;
-            padding: 6px 12px;
+            font-size: 20px;
+            padding: 8px 14px;
             border-radius: 8px;
             cursor: pointer;
-            transition: all 0.2s ease;
         }
 
-        .menu-toggle:hover {
-            background: var(--burgundy-light);
-            box-shadow: 0 0 10px var(--burgundy-glow);
-        }
-
-        /* طبقة التظليل خلف القائمة للهاتف */
+        /* الخلفية المظلمة للهاتف عند فتح القائمة */
         .sidebar-overlay {
             display: none;
             position: fixed;
             top: 0; left: 0; width: 100vw; height: 100vh;
-            background: rgba(0,0,0,0.7);
-            backdrop-filter: blur(4px);
-            z-index: 90;
+            background: rgba(0, 0, 0, 0.75);
+            z-index: 998;
+        }
+        .sidebar-overlay.active {
+            display: block;
         }
 
-        /* شبكة كروت الألعاب العمودية */
+        /* شبكة كروت الألعاب */
         .games-library-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
@@ -294,11 +284,6 @@
             position: absolute;
             top: 0; left: 0; width: 100%; height: 100%;
             object-fit: cover;
-            transition: transform 0.4s ease;
-        }
-
-        .game-card-v:hover .game-cover-wrapper img {
-            transform: scale(1.06);
         }
 
         .game-details {
@@ -313,10 +298,6 @@
             font-size: 15px;
             font-weight: 700;
             margin-bottom: 6px;
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
         }
 
         .game-genre {
@@ -346,30 +327,30 @@
             border-top: 1px solid var(--border-color);
         }
 
-        /* ================= 4. التجاوب مع الهواتف (Responsive Mobile) ================= */
+        /* ================= التجاوب مع الهاتف (Mobile Design) ================= */
         @media (max-width: 850px) {
             body {
                 padding: 10px;
             }
 
             .menu-toggle {
-                display: block; /* إظهار الزر في شاشات الهاتف */
+                display: block;
             }
 
             .sidebar {
                 position: fixed;
                 top: 0;
-                right: -280px; /* إخفاء القائمة جهة اليمين للهاتف */
+                right: -300px; /* إخفاء خارج الشاشة من جهة اليمين */
+                width: 270px;
                 height: 100vh;
-                box-shadow: -10px 0 30px rgba(0,0,0,0.8);
+                background-color: #0c0d10 !important; /* لون داكن معتم تماماً حتى لا يظهر ما تحته */
+                backdrop-filter: none;
+                z-index: 999;
+                box-shadow: -5px 0 25px rgba(0,0,0,0.9);
             }
 
             .sidebar.active {
-                transform: translateX(-280px); /* إظهار القائمة عند الضغط */
-            }
-
-            .sidebar-overlay.active {
-                display: block;
+                right: 0; /* إظهار القائمة عند الضغط */
             }
 
             .main-content {
@@ -385,18 +366,17 @@
 </head>
 <body>
 
-    <!-- خلفية مزخرفة ومتحركة -->
     <div class="animated-bg">
         <div class="bg-grid"></div>
         <div class="glow-orb orb-1"></div>
         <div class="glow-orb orb-2"></div>
     </div>
 
-    <!-- طبقة تغطية للشاشة عند فتح القائمة على الموبايل -->
-    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+    <!-- غطاء معتم للشاشة عند فتح القائمة -->
+    <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleMenu()"></div>
 
     <div class="platform-wrapper">
-        <!-- الشريط الجانبي التفاعلي -->
+        <!-- القائمة الجانبية -->
         <aside class="sidebar" id="sidebar">
             <div class="brand-logo">SMARTZONE</div>
             
@@ -430,14 +410,12 @@
         <main class="main-content">
             <header class="content-header">
                 <h1>مكتبة الألعاب</h1>
-                <!-- زر القائمة للأجهزة المحمولة (يوضع على اليسار) -->
-                <button class="menu-toggle" id="menuToggle" aria-label="Open Menu">☰</button>
+                <!-- زر الـ ☰ للموبايل -->
+                <button class="menu-toggle" onclick="toggleMenu()">☰</button>
             </header>
 
-            <!-- شبكة الألعاب -->
             <div class="games-library-grid">
 
-                <!-- 2. لعبة برا السالفة (مجانية الآن) -->
                 <a href="salfa.html" class="game-card-v">
                     <span class="card-badge badge-free"> مجاني </span>
                     <div class="game-cover-wrapper">
@@ -449,38 +427,35 @@
                     </div>
                 </a>
 
-                <!-- 1. لعبة الكويز -->
                 <a href="quiz.html" class="game-card-v">
                     <span class="card-badge badge-free"> مجاني </span>
                     <div class="game-cover-wrapper">
                         <img src="quiz-cover.jpg" alt="QuizZone Cover">
                     </div>
                     <div class="game-details">
-                        <div class="game-title">تحدي الأسئلة والسرعة (QuizZone)</div>
+                        <div class="game-title">تحدي الأسئلة والسرعة</div>
                         <div class="game-genre">ذكاء | جماعية</div>
                     </div>
                 </a>
 
-                <!-- 4. لعبة الرسم والتخمين -->
                 <a href="rsm.html" class="game-card-v">
                     <span class="card-badge badge-vip">👑 VIP</span>
                     <div class="game-cover-wrapper">
                         <img src="rsm-cover.jpg" alt="لعبة الرسم Cover">
                     </div>
                     <div class="game-details">
-                        <div class="game-title">لعبة خمن الرسمة (Draw & Guess)</div>
+                        <div class="game-title">لعبة خمن الرسمة</div>
                         <div class="game-genre">إبداع | جماعية</div>
                     </div>
                 </a>
 
-                <!-- 3. لعبة المافيا -->
                 <a href="mafia.html" class="game-card-v">
                     <span class="card-badge badge-vip">👑 VIP</span>
                     <div class="game-cover-wrapper">
                         <img src="mafia-cover.jpg" alt="SmartMafia Cover">
                     </div>
                     <div class="game-details">
-                        <div class="game-title">لعبة مافيا (SmartMafia)</div>
+                        <div class="game-title">لعبة مافيا</div>
                         <div class="game-genre">استراتيجية | غموض</div>
                     </div>
                 </a>
@@ -493,19 +468,11 @@
         </main>
     </div>
 
-    <!-- سكربت التحكم بالقائمة التفاعلية للشاشات الصغيرة -->
     <script>
-        const menuToggle = document.getElementById('menuToggle');
-        const sidebar = document.getElementById('sidebar');
-        const sidebarOverlay = document.getElementById('sidebarOverlay');
-
         function toggleMenu() {
-            sidebar.classList.toggle('active');
-            sidebarOverlay.classList.toggle('active');
+            document.getElementById('sidebar').classList.toggle('active');
+            document.getElementById('sidebarOverlay').classList.toggle('active');
         }
-
-        menuToggle.addEventListener('click', toggleMenu);
-        sidebarOverlay.addEventListener('click', toggleMenu);
     </script>
 </body>
 </html>
