@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SmartZone | مكتبة الألعاب الذكية الموحدة</title>
+    
+    <!-- استدعاء خط ألعاب قيمنق احترافي (Orbitron) للشعار -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@800;900&family=Tajawal:wght@500;700;800&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            /* درجات الرمادي الفضائي (Space Gray) */
+            --bg-body: #08090b;
+            --bg-panel: rgba(20, 22, 26, 0.85);
+            --bg-card-hover: #1e2126;
+            --border-color: rgba(255, 255, 255, 0.08);
+
+            /* درجات العنابي والتوهج (Burgundy Glow) */
+            --burgundy-main: #800020;
+            --burgundy-light: #b30e38;
+            --burgundy-glow: rgba(179, 14, 56, 0.4);
+
+            /* النصوص والعناصر */
+            --text-light: #f0f2f5;
+            --text-muted: #8b919e;
+            --vip-gold: #f59e0b;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Tajawal', 'Segoe UI', sans-serif;
+            background-color: var(--bg-body);
+            color: var(--text-light);
+            min-height: 100vh;
+            padding: 20px 30px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* ================= 2. خلفية مزخرفة ومتحركة للجيمينج ================= */
+        .animated-bg {
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            z-index: -1;
+            overflow: hidden;
+            background: radial-gradient(circle at 50% 30%, #17050a 0%, #08090b 70%);
+        }
+
+        /* شبكة ثلاثية الأبعاد متحركة */
+        .bg-grid {
+            position: absolute;
+            top: -50%; left: -50%; width: 200%; height: 200%;
+            background-image: 
+                linear-gradient(rgba(179, 14, 56, 0.08) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(179, 14, 56, 0.08) 1px, transparent 1px);
+            background-size: 50px 50px;
+            transform: perspective(600px) rotateX(60deg);
+            animation: moveGrid 20s linear infinite;
+        }
+
+        @keyframes moveGrid {
+            0% { transform: perspective(600px) rotateX(60deg) translateY(0); }
+            100% { transform: perspective(600px) rotateX(60deg) translateY(50px); }
+        }
+
+        /* توهجات ضوئية عائمة */
+        .glow-orb {
+            position: absolute;
+            width: 350px; height: 350px;
+            background: radial-gradient(circle, var(--burgundy-glow) 0%, transparent 70%);
+            border-radius: 50%;
+            filter: blur(50px);
+            animation: pulseGlow 8s ease-in-out infinite alternate;
+        }
+
+        .orb-1 { top: 10%; left: 15%; }
+        .orb-2 { bottom: 10%; right: 15%; animation-delay: -4s; }
+
+        @keyframes pulseGlow {
+            0% { transform: scale(0.8) translateY(0); opacity: 0.5; }
+            100% { transform: scale(1.2) translateY(-30px); opacity: 0.9; }
+        }
+
+        /* ================= الحاوية الرئيسية ================= */
+        .platform-wrapper {
+            display: flex;
+            width: 100%;
+            max-width: 1350px;
+            background-color: var(--bg-panel);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border-radius: 20px;
+            overflow: hidden;
+            border: 1px solid rgba(179, 14, 56, 0.25);
+            box-shadow: 0 25px 60px rgba(0,0,0,0.9), 0 0 30px var(--burgundy-glow);
+            z-index: 1;
+        }
+
+        /* ================= 3. القائمة الجانبية (Sidebar) ================= */
+        .sidebar {
+            width: 270px;
+            background-color: rgba(10, 11, 14, 0.6);
+            padding: 35px 20px;
+            border-left: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+
+        /* ================= 1. شعار احترافي لقيمنق ================= */
+        .brand-logo {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 26px;
+            font-weight: 900;
+            font-style: italic;
+            letter-spacing: 2px;
+            background: linear-gradient(135deg, #ffffff 30%, var(--burgundy-light) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 15px var(--burgundy-glow);
+            text-align: center;
+            padding-bottom: 15px;
+            border-bottom: 1px solid var(--border-color);
+            position: relative;
+        }
+
+        .brand-logo::after {
+            content: '';
+            position: absolute;
+            bottom: -1px; left: 25%; width: 50%; height: 2px;
+            background: var(--burgundy-light);
+            box-shadow: 0 0 8px var(--burgundy-light);
+        }
+
+        .nav-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .nav-section-title {
+            text-transform: uppercase;
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--text-muted);
+            letter-spacing: 1.5px;
+            margin-bottom: 5px;
+            padding-right: 5px;
+        }
+
+        /* أزرار القائمة الجانبية التفاعلية */
+        .nav-link {
+            text-decoration: none;
+            color: var(--text-light);
+            font-size: 14px;
+            font-weight: 700;
+            padding: 12px 16px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: all 0.25s ease;
+            background: transparent;
+            border: 1px solid transparent;
+            cursor: pointer;
+        }
+
+        .nav-link:hover {
+            background-color: rgba(179, 14, 56, 0.15);
+            border-color: rgba(179, 14, 56, 0.3);
+            color: #fff;
+            transform: translateX(-4px);
+        }
+
+        .nav-link.active {
+            background: linear-gradient(90deg, rgba(179, 14, 56, 0.25), transparent);
+            border-right: 4px solid var(--burgundy-light);
+            color: #fff;
+        }
+
+        /* شارة قريباً للمتجر والمجتمع */
+        .badge-soon {
+            font-size: 10px;
+            background-color: rgba(255, 255, 255, 0.08);
+            color: var(--text-muted);
+            padding: 3px 8px;
+            border-radius: 6px;
+            border: 1px solid var(--border-color);
+            font-weight: 500;
+        }
+
+        .nav-link:hover .badge-soon {
+            border-color: var(--burgundy-light);
+            color: var(--burgundy-light);
+        }
+
+        /* ================= المحتوى الرئيسي ================= */
+        .main-content {
+            flex: 1;
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .content-header {
+            margin-bottom: 30px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 20px;
+        }
+
+        .content-header h1 {
+            font-size: 28px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #ffffff 60%, var(--text-muted) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* شبكة كروت الألعاب العمودية */
+        .games-library-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+            gap: 25px;
+        }
+
+        .game-card-v {
+            background-color: rgba(15, 16, 20, 0.8);
+            border-radius: 14px;
+            overflow: hidden;
+            text-decoration: none;
+            color: var(--text-light);
+            border: 1px solid var(--border-color);
+            transition: all 0.35s cubic-bezier(0.165, 0.84, 0.44, 1);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        .game-card-v:hover {
+            transform: translateY(-8px);
+            border-color: var(--burgundy-light);
+            background-color: var(--bg-card-hover);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.9), 0 0 25px var(--burgundy-glow);
+        }
+
+        .game-cover-wrapper {
+            width: 100%;
+            padding-top: 140%;
+            position: relative;
+            background-color: #15171c;
+        }
+
+        .game-cover-wrapper img {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            object-fit: cover;
+            transition: transform 0.4s ease;
+        }
+
+        .game-card-v:hover .game-cover-wrapper img {
+            transform: scale(1.06);
+        }
+
+        .game-details {
+            padding: 16px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .game-title {
+            font-size: 15px;
+            font-weight: 700;
+            margin-bottom: 6px;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .game-genre {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .card-badge {
+            font-size: 10px;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-weight: 800;
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            z-index: 2;
+        }
+        .badge-free { background: #10b981; color: black; }
+        .badge-vip { background: var(--vip-gold); color: black; }
+
+        .footer {
+            margin-top: auto;
+            padding-top: 30px;
+            font-size: 12px;
+            color: var(--text-muted);
+            text-align: center;
+            border-top: 1px solid var(--border-color);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- خلفية مزخرفة ومتحركة -->
+    <div class="animated-bg">
+        <div class="bg-grid"></div>
+        <div class="glow-orb orb-1"></div>
+        <div class="glow-orb orb-2"></div>
+    </div>
+
+    <div class="platform-wrapper">
+        <!-- الشريط الجانبي التفاعلي -->
+        <aside class="sidebar">
+            <div class="brand-logo">SMARTZONE</div>
+            
+            <nav class="nav-group">
+                <span class="nav-section-title">القائمة الرئيسية</span>
+                <a href="index.html" class="nav-link active">
+                    <span>📖 المكتبة</span>
+                </a>
+                <a href="#" class="nav-link">
+                    <span>🛒 المتجر</span>
+                    <span class="badge-soon">قريباً...</span>
+                </a>
+                <a href="#" class="nav-link">
+                    <span>👥 المجتمع</span>
+                    <span class="badge-soon">قريباً...</span>
+                </a>
+            </nav>
+
+            <nav class="nav-group">
+                <span class="nav-section-title">ألعابي</span>
+                <a href="#" class="nav-link">
+                    <span>⚪ مثبتة</span>
+                </a>
+                <a href="#" class="nav-link">
+                    <span>⭐ المفضلة</span>
+                </a>
+            </nav>
+        </aside>
+
+        <!-- المحتوى الرئيسي -->
+        <main class="main-content">
+            <header class="content-header">
+                <h1>مكتبة الألعاب</h1>
+            </header>
+
+            <!-- شبكة الألعاب -->
+            <div class="games-library-grid">
+
+                  <!-- 2. لعبة برا السالفة (مجانية الآن) -->
+<a href="salfa.html" class="game-card-v">
+    <span class="card-badge badge-free"> مجاني </span>
+    <div class="game-cover-wrapper">
+        <img src="salfa-cover.jpg" alt="برا السالفة Cover">
+    </div>
+    <div class="game-details">
+        <div class="game-title">لعبة برا السالفة</div>
+        <div class="game-genre">فكاهة | شات</div>
+    </div>
+</a>
+
+    
+                <!-- 1. لعبة الكويز -->
+                <a href="quiz.html" class="game-card-v">
+                    <span class="card-badge badge-free"> مجاني </span>
+                    <div class="game-cover-wrapper">
+                        <img src="quiz-cover.jpg" alt="QuizZone Cover">
+                    </div>
+                    <div class="game-details">
+                        <div class="game-title">تحدي الأسئلة والسرعة (QuizZone)</div>
+                        <div class="game-genre">ذكاء | جماعية</div>
+                    </div>
+                </a>
+
+                    <!-- 4. لعبة الرسم والتخمين -->
+<a href="rsm.html" class="game-card-v">
+      <span class="card-badge badge-vip">👑 VIP</span>
+    <div class="game-cover-wrapper">
+        <img src="rsm-cover.jpg" alt="لعبة الرسم Cover">
+    </div>
+    <div class="game-details">
+        <div class="game-title">لعبة خمن الرسمة (Draw & Guess)</div>
+        <div class="game-genre">إبداع | جماعية</div>
+    </div>
+</a>
+
+                <!-- 3. لعبة المافيا -->
+                <a href="mafia.html" class="game-card-v">
+                    <span class="card-badge badge-vip">👑 VIP</span>
+                    <div class="game-cover-wrapper">
+                        <img src="mafia-cover.jpg" alt="SmartMafia Cover">
+                    </div>
+                    <div class="game-details">
+                        <div class="game-title">لعبة مافيا (SmartMafia)</div>
+                        <div class="game-genre">استراتيجية | غموض</div>
+                    </div>
+                </a>
+
+            </div>
+
+            <footer class="footer">
+                منصة SmartZone | تطوير: مؤمن يوسف
+            </footer>
+        </main>
+    </div>
+
+</body>
+</html>
