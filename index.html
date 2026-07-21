@@ -110,7 +110,7 @@
             display: flex;
             flex-direction: column;
             gap: 25px;
-            transition: all 0.3s ease-in-out;
+            transition: right 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .brand-logo {
@@ -327,10 +327,20 @@
             border-top: 1px solid var(--border-color);
         }
 
-        /* ================= التجاوب مع الهاتف (Mobile Design) ================= */
+        /* ================= التجاوب الكامل مع الموبايل ================= */
         @media (max-width: 850px) {
             body {
-                padding: 10px;
+                padding: 0; /* إلغاء حواف الجسم لشاشة الهاتف */
+                align-items: flex-start;
+            }
+
+            .platform-wrapper {
+                border-radius: 0;
+                border: none;
+                box-shadow: none;
+                backdrop-filter: none; /* إلغاء التأثير حتى لا يحبس القائمة بالمنتصف */
+                -webkit-backdrop-filter: none;
+                min-height: 100vh;
             }
 
             .menu-toggle {
@@ -340,21 +350,22 @@
             .sidebar {
                 position: fixed;
                 top: 0;
-                right: -300px; /* إخفاء خارج الشاشة من جهة اليمين */
-                width: 270px;
+                right: -100%; /* إخفاء خارج الشاشة بالكامل */
+                width: 280px;
+                max-width: 80vw;
                 height: 100vh;
-                background-color: #0c0d10 !important; /* لون داكن معتم تماماً حتى لا يظهر ما تحته */
-                backdrop-filter: none;
-                z-index: 999;
+                background-color: #0c0d10 !important;
+                z-index: 9999;
                 box-shadow: -5px 0 25px rgba(0,0,0,0.9);
             }
 
             .sidebar.active {
-                right: 0; /* إظهار القائمة عند الضغط */
+                right: 0; /* الظهور التام ملاصقاً لليمين */
             }
 
             .main-content {
                 padding: 20px 15px;
+                width: 100%;
             }
 
             .games-library-grid {
